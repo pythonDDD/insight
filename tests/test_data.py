@@ -58,6 +58,30 @@ class DataChecks(unittest.TestCase):
         self.assertEqual(app.safe_url("javascript:alert(1)"),"")
         self.assertEqual(app.safe_url("https://u:secret@example.com/"),"")
 
+    def test_nikkei_aggregation_checks_publisher_and_domain(self):
+        feed={"id":"nikkei_google","name":"日本経済新聞（Googleニュース経由）","url":"https://news.google.com/rss/search",
+              "publisher":"日本経済新聞","publisherDomain":"nikkei.com","via":"Googleニュース","topic":"economy","tier":"報道"}
+        def xml(name="日本経済新聞",domain="https://www.nikkei.com"):
+            return f'<rss><channel><item><title>金利のニュース - 日本経済新聞</title><link>https://news.google.com/rss/articles/example</link><pubDate>{app.iso(app.NOW-dt.timedelta(minutes=15))}</pubDate><source url="{domain}">{name}</source></item></channel></rss>'
+        article=app.parse_feed(xml(),feed)[0]
+        self.assertEqual(article["source"],"日本経済新聞")
+        self.assertEqual(article["via"],"Googleニュース")
+        self.assertEqual(article["title"],"金利のニュース")
+        for name,domain in [("別の新聞","https://www.nikkei.com"),("日本経済新聞","https://nikkei.com.example.org"),("日本経済新聞","javascript:alert(1)")]:
+            self.assertEqual(app.parse_feed(xml(name,domain),feed),[])
+
+    def test_news_selection_retains_an_older_source_without_losing_date_order(self):
+        feeds=[{"id":str(i),"name":str(i),"url":"https://example.com/"+str(i),"topic":"economy","tier":"報道"} for i in range(5)]
+        def parsed(_,feed):
+            i=int(feed["id"])
+            return [{"id":f'{i}-{j}',"url":f'https://example.com/{i}/{j}',"sourceId":str(i),"publishedAt":app.iso(app.NOW-dt.timedelta(hours=i,minutes=j))} for j in range(30)]
+        with patch.object(app,"FEEDS",feeds),patch.object(app,"fetch",return_value="xml"),patch.object(app,"parse_feed",side_effect=parsed):
+            news,statuses=app.collect_news({})
+        self.assertEqual(len(news),100)
+        self.assertGreaterEqual(sum(n["sourceId"]=="4" for n in news),6)
+        self.assertEqual([n["publishedAt"] for n in news],sorted([n["publishedAt"] for n in news],reverse=True))
+        self.assertEqual(sum(s["displayedCount"] for s in statuses),100)
+
     def test_yield_changes_use_basis_points_and_previous_day_not_range_start(self):
         now=app.NOW.replace(hour=12,minute=0,second=0,microsecond=0)
         timestamps=[int((now-dt.timedelta(days=25-i)).timestamp()) for i in range(26)]

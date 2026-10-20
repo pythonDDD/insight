@@ -270,11 +270,26 @@ def parse_feed(xml, feed):
         pub = parse_time(text_of(item, "pubDate") or text_of(item, "date") or text_of(item, "published") or text_of(item, "updated"))
         if not title or not safe_url(link) or not pub or pub > NOW + dt.timedelta(minutes=5) or pub < NOW - dt.timedelta(days=7):
             continue
+        source_name, source_url = feed["name"], feed.get("url", "")
+        if feed.get("publisher"):
+            source = next((c for c in item if c.tag.split("}")[-1] == "source"), None)
+            source_name = text_of(item, "source")
+            source_url = safe_url(source.get("url", "")) if source is not None else ""
+            domain = urllib.parse.urlparse(source_url).hostname or ""
+            expected = feed["publisherDomain"]
+            if source_name != feed["publisher"] or not (domain == expected or domain.endswith("." + expected)):
+                continue  # Do not label another publisher's article as Nikkei.
+            if urllib.parse.urlparse(link).hostname != "news.google.com":
+                continue
+            suffix = " - " + source_name
+            if title.endswith(suffix):
+                title = title[:-len(suffix)]
         topic = classify(title, feed["topic"] if feed["topic"] in TOPICS else "economy")
         output.append({"id": hashlib.sha256(link.encode()).hexdigest()[:14], "title": title, "url": link,
-                       "source": feed["name"], "sourceId": feed["id"], "tier": feed["tier"],
+                       "source": source_name, "sourceId": feed["id"], "sourceUrl": source_url,
+                       "via": feed.get("via"), "tier": feed["tier"],
                        "publishedAt": iso(pub), "fetchedAt": iso(), "topic": topic, "status": "ok"})
-    return output[:30]
+    return sorted(output, key=lambda n: n["publishedAt"], reverse=True)[:30]
 
 
 def collect_news(old):
@@ -292,7 +307,20 @@ def collect_news(old):
                 news.extend(cached)
                 statuses.append({**f, "status": "error", "count": len(cached), "errors": [str(exc)[:100]], "attemptedAt": iso()})
     unique = {n["url"]: n for n in news}
-    return sorted(unique.values(), key=lambda n: n["publishedAt"], reverse=True)[:100], sorted(statuses, key=lambda s: s["id"])
+    ordered = sorted(unique.values(), key=lambda n: n["publishedAt"], reverse=True)
+    # Keep several recent headlines per feed so a busy feed cannot hide a source.
+    selected, counts = {}, {}
+    for n in ordered:
+        if counts.get(n["sourceId"], 0) < 6:
+            selected[n["url"]] = n
+            counts[n["sourceId"]] = counts.get(n["sourceId"], 0) + 1
+    for n in ordered:
+        if len(selected) >= 100:
+            break
+        selected.setdefault(n["url"], n)
+    for s in statuses:
+        s["displayedCount"] = sum(n["sourceId"] == s["id"] for n in selected.values())
+    return sorted(selected.values(), key=lambda n: n["publishedAt"], reverse=True), sorted(statuses, key=lambda s: s["id"])
 
 
 def parse_ics(text):

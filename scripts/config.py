@@ -28,6 +28,7 @@ ASSETS = [
 ]
 
 FEEDS = [
+    {"id": "nikkei_google", "name": "日本経済新聞（Googleニュース経由）", "url": "https://news.google.com/rss/search?q=site%3Anikkei.com%20when%3A7d&hl=ja&gl=JP&ceid=JP%3Aja", "tier": "報道", "topic": "economy", "publisher": "日本経済新聞", "publisherDomain": "nikkei.com", "via": "Googleニュース", "note": "配信メタデータの媒体名・ドメインを照合。見出しと記事へのリンクのみ。本文未取得・有料記事あり。"},
     {"id": "nhk_economy", "name": "NHK 経済", "url": "https://www.nhk.or.jp/rss/news/cat5.xml", "tier": "報道", "topic": "economy"},
     {"id": "nhk_world", "name": "NHK 国際", "url": "https://www.nhk.or.jp/rss/news/cat6.xml", "tier": "報道", "topic": "geopolitics"},
     {"id": "nhk_politics", "name": "NHK 政治", "url": "https://www.nhk.or.jp/rss/news/cat4.xml", "tier": "報道", "topic": "politics"},
