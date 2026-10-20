@@ -1,0 +1,53 @@
+[
+  {
+    "id": "meta-q3-2026-call",
+    "title": "Meta 第3四半期決算説明会",
+    "at": "2026-10-22T05:30:00+09:00",
+    "sourceName": "Meta Investor Relations",
+    "url": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-to-Announce-Third-Quarter-2026-Results/default.aspx",
+    "category": "ai",
+    "importance": "high",
+    "explanation": "AIへの投資額だけでなく、その投資が広告収入や利益に結びついているかを確認。良い数字でも市場の事前の期待を下回ると、株価には下押し要因になります。",
+    "timeNote": "表示は説明会の開始予定（米東部10月21日16:30）。決算資料は同日の米市場引け後に公表予定ですが、公表の正確な時刻は指定されていません。",
+    "verifiedAt": "2026-10-20T12:52:40+09:00"
+  },
+  {
+    "id": "tesla-q3-2026-call",
+    "title": "Tesla 第3四半期決算・質疑応答会",
+    "at": "2026-10-22T06:30:00+09:00",
+    "sourceName": "Tesla Investor Relations",
+    "url": "https://ir.tesla.com/press-release/tesla-third-quarter-2026-production-deliveries-and-deployments",
+    "category": "ai",
+    "importance": "high",
+    "explanation": "販売台数と利益は別物。値下げ後の利益率、キャッシュフロー、自動運転・蓄電池事業の見通しが、将来の稼ぐ力に対する評価を変える材料になります。",
+    "timeNote": "表示は質疑応答会の開始予定（米東部10月21日17:30）。決算資料は同日の米市場引け後に公表予定で、資料の公開時刻そのものではありません。",
+    "verifiedAt": "2026-10-20T12:52:40+09:00"
+  },
+  {
+    "id": "japan-cpi-2026-09",
+    "title": "日本 全国消費者物価指数（9月分）",
+    "at": "2026-10-23T08:30:00+09:00",
+    "sourceName": "総務省統計局",
+    "url": "https://www.stat.go.jp/data/kouhyou/e-stat_cpi.xml",
+    "category": "rates",
+    "importance": "high",
+    "explanation": "身の回りの値段がどれだけ上がったかを示す指標。物価の強さが予想を上回れば日銀の利上げ予想を強める可能性があります。円や国債利回りへの影響は、景気や賃金の状況と合わせて判断します。",
+    "timeNote": "日本時間の公表予定。全国9月分であり、東京都区部10月分（10月30日公表予定）とは別の統計です。",
+    "verifiedAt": "2026-10-20T12:52:40+09:00"
+  },
+  {
+    "id": "fomc-2026-10-start",
+    "title": "FOMC会合開始（米国日付10月27日）",
+    "at": "2026-10-27T13:00:00+09:00",
+    "sourceName": "米連邦準備制度（Fed）",
+    "url": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+    "category": "rates",
+    "importance": "high",
+    "explanation": "米国の政策金利を話し合う会合。会合は米国10月27〜28日で、政策決定の公表は日本時間10月29日03:00の予定です。決定発表は、初期表示の10月21〜27日の1週間の範囲外です。",
+    "timeNote": "開始時刻は未公表。atは米東部10月27日00:00を日本時間へ換算した日付整列用の値で、会合の開始時刻ではありません。画面では米国日付10月27日のみを表示してください。",
+    "timePrecision": "date",
+    "sourceDate": "2026-10-27",
+    "sourceTimeZone": "America/New_York",
+    "verifiedAt": "2026-10-20T12:52:40+09:00"
+  }
+]
