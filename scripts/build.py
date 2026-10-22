@@ -16,6 +16,13 @@ def build():
         raise ValueError("snapshot validation failed")
     if len(learn.get("topics", [])) != 6:
         raise ValueError("learning content missing")
+    briefing = snapshot.get("briefing")
+    if briefing:
+        stories = briefing.get("stories", [])
+        news_ids = {n["id"] for n in snapshot["news"]}
+        if (len(stories) > 3 or len({s["theme"] for s in stories}) != len(stories)
+                or any(s["newsId"] not in news_ids for s in stories)):
+            raise ValueError("briefing references or topic diversity invalid")
     html = (SITE / "index.html").read_text(encoding="utf-8")
     css = (SITE / "assets/style.css").read_text(encoding="utf-8")
     js = (SITE / "assets/app.js").read_text(encoding="utf-8")

@@ -26,6 +26,7 @@ import xml.etree.ElementTree as ET
 from zoneinfo import ZoneInfo
 
 from config import ASSETS, FEEDS, TOPICS
+from briefing import create_briefing
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "site" / "data"
@@ -478,10 +479,11 @@ def main():
                 "timezone": "Asia/Tokyo", "windowStart": iso(WINDOW_START), "windowEnd": iso(WINDOW_END),
                 "assets": assets, "predictions": markets, "news": news, "events": events,
                 "outlooks": create_outlooks(assets, news, markets), "trackRecord": track,
+                "briefing": create_briefing(news, assets, NOW),
                 "sources": [quote_status, pm_status, *feed_status, event_status],
                 "topics": TOPICS, "method": {"version": "1.0", "kind": "transparent-rule-based", "scoreIsProbability": False,
                     "formula": "銘柄スコア = clip(35 × [0.65 × 5取引日変化 / (日次標準偏差 × √5) + 0.35 × 前日変化 / 日次標準偏差], −100, 100)。分類は±18。分類間の単純平均。為替は平均しない。",
-                    "newsUse": "見出しをトピック分類して条件付きの因果説明につなぐ。記事本文の事実認定・感情判定・AIによる全文分析は行わない。Polymarketの価格は銘柄スコアに加算しない。",
+                    "newsUse": "見出しをトピック分類して条件付きの影響経路を示す。3大ニュースは直近48時間の見出しから市場への関連性・新しさ・関連価格の変動を基準に選び、テーマの重複を除く。ニュースとPolymarketは勢いスコアに加算しない。記事本文の事実認定・AIによる全文分析や、値動きの原因の断定は行わない。",
                     "range": "直近最大60日次変化の標準偏差×√日数。価格は対数変化、利回りはbp変化。中心は最新価格でドリフトなし。確率付き予測区間ではなく過去の振れ幅の目安。休日は土日だけを除外、現地祝日は未調整。",
                     "limits": ["予測精度は未確立。過去の勢いが続く保証はありません。", "すべての国・情報・予測市場を網羅していません。", "ニュースの本文取得やXの投稿収集、経済指標コンセンサス取得は行っていません。", "先物は期近。限月交代により連続価格に段差が出る場合があります。", "金利は米国の市場利回りを表示。各国政策金利・実質金利のライブ値は取得していません。"]}}
     write_json(DATA / "snapshot.json", snapshot)
